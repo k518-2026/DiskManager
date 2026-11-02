@@ -1,0 +1,57 @@
+<UserControl x:Class="DiskManager.Views.OverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="24,20,24,24">
+
+        <TextBlock Text="選択中のディスク" Style="{StaticResource Eyebrow}" />
+        <TextBlock Text="{Binding DiskSummaryText}" TextWrapping="Wrap" LineHeight="22" Margin="0,0,0,20" />
+
+        <TextBlock Text="レイアウト（容量に比例）" Style="{StaticResource Eyebrow}" />
+        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+                CornerRadius="4" Padding="6" Margin="0,0,0,10">
+            <Grid x:Name="MapGrid" Height="62" />
+        </Border>
+        <TextBlock x:Name="MapLegend" Style="{StaticResource Mono}" FontSize="11"
+                   Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,22" />
+
+        <TextBlock Text="このディスク上のボリューム" Style="{StaticResource Eyebrow}" />
+        <DataGrid ItemsSource="{Binding Volumes}" SelectedItem="{Binding SelectedVolume}"
+                  MaxHeight="220" Margin="0,0,0,20">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ドライブ" Binding="{Binding DriveLetter}" Width="80" />
+                <DataGridTextColumn Header="ラベル" Binding="{Binding Label}" Width="*" />
+                <DataGridTextColumn Header="形式" Binding="{Binding FileSystem}" Width="90" />
+                <DataGridTextColumn Header="種類" Binding="{Binding DriveTypeText}" Width="120" />
+                <DataGridTextColumn Header="容量" Binding="{Binding CapacityText}" Width="100" />
+                <DataGridTextColumn Header="空き" Binding="{Binding FreeText}" Width="100" />
+                <DataGridTemplateColumn Header="使用率" Width="160">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Background="{StaticResource Surface}" Width="90" Height="8" CornerRadius="4">
+                                    <Border Background="{StaticResource Accent}" HorizontalAlignment="Left" CornerRadius="4"
+                                            Width="{Binding UsedRatio, Converter={StaticResource PercentWidth}, ConverterParameter=90}" />
+                                </Border>
+                                <TextBlock Text="{Binding UsedPercentText}" Margin="8,0,0,0"
+                                           FontFamily="{StaticResource MonoFont}" FontSize="11" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="" Binding="{Binding ProtectionText}" Width="120" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+                CornerRadius="4" Padding="14">
+            <StackPanel>
+                <TextBlock Text="はじめに" Style="{StaticResource Eyebrow}" />
+                <TextBlock TextWrapping="Wrap" LineHeight="21" Foreground="{StaticResource Muted}">
+                    左の一覧からディスクを選ぶと、各タブの操作対象が切り替わります。
+                    データを失う操作の前には、対象名の入力を求める確認画面が出ます。
+                    実行内容はすべて下部のログに残り、ファイルに保存できます。
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

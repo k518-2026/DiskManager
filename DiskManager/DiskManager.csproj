@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	  <!-- （前回のネイティブDLLをまとめる設定も一緒に入れるならここ） -->
+	  <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <SelfContained>true</SelfContained>
+	  <DebugType>embedded</DebugType>
+	  <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>DiskManager</AssemblyName>
+    <RootNamespace>DiskManager</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AssemblyTitle>ディスク管理ツール</AssemblyTitle>
+    <Product>DiskManager</Product>
+    <Version>1.0.0</Version>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>

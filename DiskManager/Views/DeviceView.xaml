@@ -1,0 +1,51 @@
+<UserControl x:Class="DiskManager.Views.DeviceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="24,20,24,24">
+
+        <GroupBox Header="取り外しと再認識">
+            <StackPanel>
+                <TextBlock Text="取り外すボリューム（左で選んだディスク内）" Style="{StaticResource Eyebrow}" />
+                <ComboBox ItemsSource="{Binding Volumes}" SelectedItem="{Binding SelectedVolume}"
+                          DisplayMemberPath="Display" MinWidth="320" HorizontalAlignment="Left" />
+                <WrapPanel Margin="0,6,0,0">
+                    <Button Content="安全に取り外す" Command="{Binding SafeRemoveCommand}" MinWidth="150" />
+                    <Button Content="ハードウェアを再認識" Command="{Binding RescanCommand}" MinWidth="180" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap" LineHeight="21" Foreground="{StaticResource Muted}" Margin="0,4,0,0">
+                    取り外しでは、書き込みを完了させてからボリュームのマウントを解除し、USB 機器そのものを停止します。
+                    「使用中」で拒否された場合は、そのドライブを開いているエクスプローラーやアプリを閉じてから再試行してください。
+                    抜き差ししても現れないドライブは、再認識を実行すると復帰することがあります。
+                </TextBlock>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="diskpart（上級者向け）">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Muted}" Margin="0,0,0,8"
+                           Text="このアプリの画面にない操作は、diskpart のコマンドを直接書いて実行できます。1 行に 1 コマンドで書いてください。" />
+                <TextBox Text="{Binding DiskPartScript, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True" Height="150" VerticalScrollBarVisibility="Auto"
+                         FontFamily="{StaticResource MonoFont}" FontSize="12.5" />
+                <WrapPanel>
+                    <Button Content="スクリプトを実行" Command="{Binding RunDiskPartCommand}" MinWidth="150" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap" LineHeight="21" Foreground="{StaticResource Muted}" FontSize="11.5"
+                           Margin="0,4,0,0"
+                           Text="例: list disk / select disk 1 / list partition / convert gpt / attributes disk clear readonly" />
+            </StackPanel>
+        </GroupBox>
+
+        <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+                CornerRadius="4" Padding="14">
+            <StackPanel>
+                <TextBlock Text="安全のための制限" Style="{StaticResource Eyebrow}" />
+                <TextBlock TextWrapping="Wrap" LineHeight="21" Foreground="{StaticResource Muted}">
+                    Windows が入っているドライブと起動用パーティションは、削除・フォーマット・消去の対象にできません。
+                    それ以外の破壊的な操作でも、実行前に対象名の入力を求めます。
+                    実行した内容はすべてログに残るので、後から確認できます。
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

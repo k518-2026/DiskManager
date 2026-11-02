@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ディスク管理ツール 操作マニュアル</title>
+<style>
+:root{
+  --ink:#10141a;
+  --panel:#181f27;
+  --surface:#212a34;
+  --surface-hi:#2b3743;
+  --line:#33404e;
+  --text:#e6ecf2;
+  --muted:#8e9baa;
+  --accent:#35c1a6;
+  --accent-dim:#1e6e60;
+  --warn:#e8a33d;
+  --danger:#e5544b;
+  --ui:"Yu Gothic UI","Meiryo UI","Hiragino Sans","Segoe UI",sans-serif;
+  --mono:"Cascadia Mono",Consolas,"MS Gothic",monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}*{transition:none!important;}}
+
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--ui);
+  font-size:15px;
+  line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{color:var(--accent);text-decoration:none;}
+a:hover{text-decoration:underline;}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* ---------- ヘッダー ---------- */
+.masthead{
+  border-bottom:1px solid var(--line);
+  background:var(--panel);
+  padding:34px 28px 26px;
+}
+.masthead-inner{max-width:1180px;margin:0 auto;}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.18em;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin:0 0 10px;
+}
+h1{
+  margin:0 0 14px;
+  font-size:30px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.lede{margin:0;max-width:64ch;color:var(--muted);}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:20px;
+  font-family:var(--mono);font-size:11.5px;
+}
+.meta span{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:3px;
+  padding:4px 10px;
+  color:var(--muted);
+}
+
+/* ---------- レイアウト ---------- */
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 28px 90px;
+  display:grid;
+  grid-template-columns:224px 1fr;
+  gap:52px;
+  align-items:start;
+}
+
+nav.toc{
+  position:sticky;
+  top:0;
+  padding:36px 0;
+  max-height:100vh;
+  overflow-y:auto;
+}
+nav.toc p{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  color:var(--muted);text-transform:uppercase;margin:0 0 12px;
+}
+nav.toc ol{list-style:none;margin:0;padding:0;}
+nav.toc li{margin:0;}
+nav.toc a{
+  display:block;
+  padding:6px 12px;
+  color:var(--muted);
+  font-size:13px;
+  border-left:2px solid var(--line);
+  line-height:1.5;
+}
+nav.toc a:hover{color:var(--text);border-left-color:var(--muted);text-decoration:none;}
+nav.toc a.on{color:var(--accent);border-left-color:var(--accent);background:rgba(53,193,166,.06);}
+
+main{padding:44px 0 0;min-width:0;}
+
+section{margin:0 0 66px;scroll-margin-top:24px;}
+h2{
+  font-size:22px;font-weight:600;margin:0 0 6px;
+  padding-bottom:12px;border-bottom:1px solid var(--line);
+}
+h2 .num{
+  font-family:var(--mono);font-size:12px;color:var(--accent);
+  margin-right:12px;vertical-align:2px;
+}
+h3{font-size:16px;font-weight:600;margin:34px 0 8px;}
+h4{font-size:14px;font-weight:600;margin:22px 0 4px;color:var(--text);}
+p{margin:0 0 14px;}
+ul,ol{margin:0 0 14px;padding-left:22px;}
+li{margin-bottom:6px;}
+code{
+  font-family:var(--mono);font-size:.88em;
+  background:var(--ink);border:1px solid var(--line);
+  border-radius:3px;padding:1px 6px;color:var(--accent);
+}
+kbd{
+  font-family:var(--mono);font-size:.85em;
+  background:var(--surface-hi);border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:4px;padding:2px 7px;
+}
+
+/* ---------- 復元可否バッジ（この文書の要） ---------- */
+.op{
+  border:1px solid var(--line);
+  border-radius:5px;
+  background:var(--panel);
+  margin:0 0 14px;
+  overflow:hidden;
+}
+.op-head{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:12px 16px;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+}
+.op-name{font-weight:600;font-size:14.5px;}
+.op-body{padding:14px 16px 4px;}
+.op-body p:last-child{margin-bottom:14px;}
+
+.rev{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  padding:3px 9px;border-radius:11px;white-space:nowrap;
+  border:1px solid;
+}
+.rev-safe{color:var(--accent);border-color:var(--accent-dim);background:rgba(53,193,166,.09);}
+.rev-warn{color:var(--warn);border-color:rgba(232,163,61,.5);background:rgba(232,163,61,.09);}
+.rev-gone{color:var(--danger);border-color:rgba(229,84,75,.5);background:rgba(229,84,75,.09);}
+
+.time{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;}
+
+/* ---------- 注意ブロック ---------- */
+.note{
+  border-left:3px solid var(--accent);
+  background:var(--panel);
+  padding:14px 18px;
+  margin:0 0 18px;
+  border-radius:0 4px 4px 0;
+}
+.note.warn{border-left-color:var(--warn);}
+.note.danger{border-left-color:var(--danger);}
+.note-title{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  color:var(--muted);margin:0 0 6px;text-transform:uppercase;
+}
+.note.warn .note-title{color:var(--warn);}
+.note.danger .note-title{color:var(--danger);}
+.note p:last-child{margin-bottom:0;}
+
+/* ---------- 表 ---------- */
+table{
+  width:100%;border-collapse:collapse;margin:0 0 20px;
+  font-size:13.5px;
+}
+th{
+  text-align:left;font-weight:normal;
+  color:var(--muted);font-family:var(--ui);
+  background:var(--surface-hi);
+  border:1px solid var(--line);
+  padding:9px 12px;
+  vertical-align:top;
+}
+td{
+  border:1px solid var(--line);
+  padding:9px 12px;
+  vertical-align:top;
+  background:var(--panel);
+}
+td.mono{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+tbody tr:nth-child(even) td{background:var(--surface);}
+
+/* ---------- 手順 ---------- */
+.steps{counter-reset:s;list-style:none;padding:0;margin:0 0 18px;}
+.steps>li{
+  counter-increment:s;
+  position:relative;
+  padding:0 0 0 40px;
+  margin-bottom:14px;
+}
+.steps>li::before{
+  content:counter(s);
+  position:absolute;left:0;top:2px;
+  width:25px;height:25px;line-height:25px;text-align:center;
+  font-family:var(--mono);font-size:11.5px;
+  color:var(--accent);
+  border:1px solid var(--accent-dim);border-radius:50%;
+  background:var(--panel);
+}
+
+/* ---------- 帯（レイアウト図の再現） ---------- */
+.map{
+  display:flex;gap:2px;height:56px;
+  border:1px solid var(--line);border-radius:4px;
+  background:var(--panel);padding:5px;margin:0 0 8px;
+}
+.map div{
+  border-radius:2px;padding:6px 9px;overflow:hidden;
+  font-size:11px;line-height:1.4;color:var(--muted);
+}
+.map b{display:block;color:var(--text);font-size:12px;font-weight:600;}
+.m-sys{flex:0 0 12%;background:rgba(232,163,61,.25);border-top:3px solid var(--warn);}
+.m-a{flex:1;background:rgba(53,193,166,.25);border-top:3px solid var(--accent);}
+.m-b{flex:0 0 26%;background:rgba(78,158,216,.25);border-top:3px solid #4e9ed8;}
+.m-free{flex:0 0 18%;background:#222a34;border-top:3px solid #3a4654;}
+.caption{font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 22px;}
+
+footer{
+  border-top:1px solid var(--line);
+  padding:26px 28px 60px;
+  color:var(--muted);font-size:12.5px;
+}
+footer div{max-width:1180px;margin:0 auto;}
+
+/* ---------- 狭い画面 ---------- */
+@media (max-width:880px){
+  .wrap{grid-template-columns:1fr;gap:0;padding:0 20px 60px;}
+  nav.toc{position:static;max-height:none;padding:28px 0 0;border-bottom:1px solid var(--line);}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:20px;}
+  nav.toc a{border-left:0;border:1px solid var(--line);border-radius:3px;padding:5px 10px;font-size:12px;}
+  nav.toc a.on{border-color:var(--accent);}
+  .masthead{padding:26px 20px 22px;}
+  h1{font-size:24px;}
+  main{padding:26px 0 0;}
+  .time{margin-left:0;width:100%;}
+}
+
+@media print{
+  body{background:#fff;color:#000;}
+  nav.toc,.masthead .meta{display:none;}
+  .wrap{display:block;padding:0;}
+  section{page-break-inside:avoid;}
+  td,th,.op,.note{background:#fff!important;color:#000;border-color:#999;}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <p class="eyebrow">操作マニュアル</p>
+    <h1>ディスク管理ツール</h1>
+    <p class="lede">
+      ドライブの健康診断、パーティションの作成と削除、フォーマット、安全な取り外し、
+      古い CD / DVD のバックアップ。ひとつの画面から扱えるようにまとめたツールです。
+    </p>
+    <div class="meta">
+      <span>Windows 10 / 11</span>
+      <span>.NET 8 · WPF</span>
+      <span>要管理者権限</span>
+      <span>Version 1.0</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc" aria-label="目次">
+  <p>目次</p>
+  <ol>
+    <li><a href="#start">起動と権限</a></li>
+    <li><a href="#screen">画面の見かた</a></li>
+    <li><a href="#overview">概要</a></li>
+    <li><a href="#health">健康状態</a></li>
+    <li><a href="#partition">パーティション</a></li>
+    <li><a href="#format">フォーマット</a></li>
+    <li><a href="#optical">CD / DVD</a></li>
+    <li><a href="#device">取り外し・ツール</a></li>
+    <li><a href="#safety">安全のしくみ</a></li>
+    <li><a href="#trouble">困ったときは</a></li>
+    <li><a href="#glossary">用語</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ 起動と権限 ============ -->
+<section id="start">
+  <h2><span class="num">01</span>起動と権限</h2>
+
+  <p>
+    このツールはディスクを直接操作するため、必ず管理者権限で動きます。
+    起動すると Windows の確認（UAC）が一度出ますので、「はい」を選んでください。
+  </p>
+
+  <h3>起動のしかた</h3>
+  <ul>
+    <li><code>DiskManager.exe</code> をダブルクリック</li>
+    <li>Visual Studio から実行する場合は <kbd>Ctrl</kbd>+<kbd>F5</kbd>（<kbd>F5</kbd> だとデバッガーの都合で権限の確認が二重になります）</li>
+  </ul>
+
+  <h3>権限があるかを確かめる</h3>
+  <p>
+    画面左上、タイトルの右に <code>管理者として実行中</code> と出ていれば正常です。
+    <code>管理者権限がありません</code> と表示されている場合は、S.M.A.R.T. の読み取り、
+    パーティション操作、フォーマット、取り外しのすべてが失敗します。
+    いったん閉じ、実行ファイルを右クリックして「管理者として実行」で起動し直してください。
+  </p>
+
+  <div class="note warn">
+    <p class="note-title">最初に確認</p>
+    <p>
+      操作したいドライブに大事なデータが残っていないか、先に確かめてください。
+      このツールの多くの操作は元に戻せません。各操作の説明には
+      <span class="rev rev-gone">戻せない</span> のようなバッジを付けてあるので、
+      実行前に目印にしてください。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 画面の見かた ============ -->
+<section id="screen">
+  <h2><span class="num">02</span>画面の見かた</h2>
+
+  <p>画面は 4 つの領域に分かれています。</p>
+
+  <table>
+    <thead>
+      <tr><th style="width:170px">領域</th><th>役割</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>左側の一覧</td>
+        <td>つながっている物理ディスクが並びます。<strong>ここで選んだディスクが、右側すべてのタブの操作対象になります。</strong>各項目には型番、容量・種類・接続方式、ドライブ文字、健康状態のバッジが出ます。</td>
+      </tr>
+      <tr>
+        <td>右側のタブ</td>
+        <td>目的ごとに 6 つ。概要 / 健康状態 / パーティション / フォーマット / CD・DVD / 取り外し・ツール。</td>
+      </tr>
+      <tr>
+        <td>下部の進捗バー</td>
+        <td>実行中の処理と進み具合。長い処理はここで残量を確認します。</td>
+      </tr>
+      <tr>
+        <td>実行ログ</td>
+        <td>行った操作と結果がすべて時刻付きで残ります。「ログを保存」でテキストファイルに書き出せます。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>共通のボタン</h3>
+  <table>
+    <thead><tr><th style="width:170px">ボタン</th><th>動作</th></tr></thead>
+    <tbody>
+      <tr><td>再スキャン</td><td>ディスクとボリュームの一覧を取り直します。ケーブルを挿し直したあとなどに使います。</td></tr>
+      <tr><td>中止</td><td>実行中の処理を止めます。読み取り検査やコピーは安全に止まりますが、フォーマットの途中で止めるとボリュームは使えない状態になります。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 概要 ============ -->
+<section id="overview">
+  <h2><span class="num">03</span>概要タブ</h2>
+
+  <p>
+    選んだディスクの素性と、中がどう区切られているかをひと目で見るための画面です。
+    ここでは何も変更されません。まずこのタブで対象が合っているかを確かめてから、他のタブに移ってください。
+  </p>
+
+  <h3>レイアウトの帯</h3>
+  <p>パーティションが容量に比例した幅で並びます。色と枠の意味は次のとおりです。</p>
+
+  <div class="map" role="img" aria-label="パーティションレイアウトの例。システム領域、Cドライブ、Dドライブ、未割り当て領域が容量に比例して並んでいる。">
+    <div class="m-sys"><b>—</b>500 MB<br>EFI</div>
+    <div class="m-a"><b>C:</b>400 GB<br>基本データ</div>
+    <div class="m-b"><b>D:</b>180 GB<br>基本データ</div>
+    <div class="m-free"><b>未割り当て</b>120 GB</div>
+  </div>
+  <p class="caption">
+    橙の枠 = システム／起動領域（保護対象）　·　緑・青の枠 = 通常のパーティション　·　灰 = 未割り当て領域
+  </p>
+
+  <p>
+    帯にマウスを重ねると、開始位置と種類が出ます。
+    <strong>未割り当て</strong>と表示されている部分は、まだどのドライブにも属していない空き領域です。
+    ここに新しいパーティションを作れます。
+  </p>
+
+  <h3>ボリューム一覧</h3>
+  <p>
+    このディスクの中でドライブ文字が付いているものを一覧にします。使用率のバーは、
+    空き容量がどれだけ残っているかの目安です。「保護（システム）」と付いた行は、
+    このツールでは削除もフォーマットもできません。
+  </p>
+</section>
+
+<!-- ============ 健康状態 ============ -->
+<section id="health">
+  <h2><span class="num">04</span>健康状態タブ</h2>
+
+  <p>
+    ドライブ自身が内部に記録している劣化の記録（S.M.A.R.T.）を読み出して、
+    まだ使い続けてよいかを判定します。
+  </p>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">健康状態を取得</span>
+      <span class="rev rev-safe">読み取りのみ</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>
+        ディスクを選んでボタンを押すだけです。ドライブには何も書き込みません。
+        気になったときに何度でも実行できます。
+      </p>
+    </div>
+  </div>
+
+  <h3>判定の見かた</h3>
+  <table>
+    <thead><tr><th style="width:110px">判定</th><th>意味と、どうすべきか</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong style="color:var(--accent)">良好</strong></td>
+        <td>重大な劣化の兆候はありません。通常どおり使えます。</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--warn)">注意</strong></td>
+        <td>代替処理済セクタがある、温度が高いなど、劣化の始まりが見えています。すぐ壊れるとは限りませんが、バックアップの間隔を短くしてください。</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--danger)">不良</strong></td>
+        <td>読み取り不能な領域が出ている、またはドライブ自身が故障予測フラグを立てています。<strong>新しい書き込みをせず、いますぐ他のドライブにデータを退避してください。</strong></td>
+      </tr>
+      <tr>
+        <td>取得不可</td>
+        <td>このドライブは S.M.A.R.T. を公開していません。USB 変換ブリッジ経由の外付けや一部の NVMe で起こります。故障を意味しません。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>特に見ておきたい項目</h3>
+  <table>
+    <thead><tr><th style="width:200px">属性</th><th>見かた</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">05 代替処理済セクタ数</td><td>読めなくなったセクタを予備と入れ替えた回数。0 が理想。増え続けているなら寿命が近い。</td></tr>
+      <tr><td class="mono">197 代替処理保留中セクタ数</td><td>読めなくなったが、まだ入れ替えられていないセクタ。1 以上なら要注意。</td></tr>
+      <tr><td class="mono">198 回復不可能セクタ数</td><td>訂正できなかったエラー。1 以上ならデータの一部はすでに失われている可能性がある。</td></tr>
+      <tr><td class="mono">194 温度</td><td>55 ℃ を超えていたら冷却の見直しを。</td></tr>
+      <tr><td class="mono">09 使用時間</td><td>累積の通電時間。HDD は 3〜5 万時間あたりから交換を意識する目安になります。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <p class="note-title">属性一覧の読みかた</p>
+    <p>
+      「現在値」は 100 や 200 から始まり、劣化するほど下がります。これが「しきい値」を下回った属性が
+      ひとつでもあると、判定は不良になります。「生の値」は回数や時間などの実数で、
+      属性によって単位が違います。
+    </p>
+  </div>
+</section>
+
+<!-- ============ パーティション ============ -->
+<section id="partition">
+  <h2><span class="num">05</span>パーティションタブ</h2>
+
+  <p>ディスクの中を区切り直す画面です。ここから先はデータが失われる操作が含まれます。</p>
+
+  <h3>新しいパーティションを作る</h3>
+  <ol class="steps">
+    <li>左の一覧で対象のディスクを選びます。</li>
+    <li>概要タブの帯で、未割り当て領域があることを確かめます。</li>
+    <li>空き全部を使うなら「空き領域をすべて使う」にチェック。一部だけなら外して <strong>MB 単位</strong>でサイズを入れます（10 GB なら <code>10240</code>）。</li>
+    <li>ドライブ文字を選びます。<code>(自動)</code> のままなら Windows が空いている文字を割り当てます。</li>
+    <li>「作成する」を押します。</li>
+    <li>できたパーティションは<strong>まだ未フォーマットで使えません。</strong>続けてフォーマットタブへ進みます。</li>
+  </ol>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">パーティションを作成</span>
+      <span class="rev rev-safe">既存データは無事</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>未割り当て領域を使うだけなので、他のパーティションの中身には触れません。</p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">選択したパーティションを削除</span>
+      <span class="rev rev-gone">戻せない</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>
+        一覧で選んだパーティションを消し、そこを未割り当てに戻します。中のデータは失われます。
+        システム／起動パーティションは選んでも削除できません。
+      </p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">未使用ディスクを初期化</span>
+      <span class="rev rev-warn">中身が消える</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>
+        買ったばかりのディスクや、Windows が「初期化されていません」と言うディスクに管理情報を書きます。
+        <strong>GPT</strong> が既定です。2 TB を超えるディスクや UEFI 環境では GPT を選んでください。
+        古い機器との互換が必要なときだけ MBR にします。
+      </p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">ディスクを消去</span>
+      <span class="rev rev-gone">戻せない</span>
+      <span class="time">数秒〜数時間</span>
+    </div>
+    <div class="op-body">
+      <p>
+        ディスク上のパーティションをすべて削除します。「消去時に全域へゼロを書き込む」に
+        チェックを入れると、加えて全領域にゼロを書き込むため復元は極めて困難になりますが、
+        容量に応じて数時間かかり、途中で止められません。譲渡や廃棄の前に使ってください。
+      </p>
+    </div>
+  </div>
+
+  <h3>そのほかの操作</h3>
+  <table>
+    <thead><tr><th style="width:210px">ボタン</th><th>使う場面</th></tr></thead>
+    <tbody>
+      <tr><td>ドライブ文字を割り当て</td><td>エクスプローラーに出てこないパーティションに文字を付けます。選択中のパーティションが対象です。</td></tr>
+      <tr><td>オンライン / オフライン切替</td><td>「オフライン」と表示されるディスクを使える状態に戻します。もう一度押すと逆になります。</td></tr>
+      <tr><td>読み取り専用を解除</td><td>書き込もうとすると拒否されるディスクの属性を外します。物理的な書き込み禁止スイッチがある場合は、そちらも確認してください。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ フォーマット ============ -->
+<section id="format">
+  <h2><span class="num">06</span>フォーマットタブ</h2>
+
+  <p>ドライブを使える状態に整えます。3 つの方式があり、目的で選び分けます。</p>
+
+  <h3>どれを選ぶか</h3>
+  <table>
+    <thead>
+      <tr><th style="width:160px">方式</th><th>かかる時間</th><th>選ぶ場面</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>簡易フォーマット</strong></td>
+        <td class="mono">数秒</td>
+        <td>自分で使い続けるドライブ。中身を空にしたいだけのとき。データは復元ソフトで読み出せる状態のまま残ります。</td>
+      </tr>
+      <tr>
+        <td><strong>通常フォーマット</strong></td>
+        <td class="mono">数十分〜数時間</td>
+        <td>調子が怪しいドライブを使い直すとき。全セクタにゼロを書きながら不良セクタを検査します。</td>
+      </tr>
+      <tr>
+        <td><strong>ディープフォーマット</strong></td>
+        <td class="mono">数時間〜</td>
+        <td>人に譲る、売る、捨てる前。ゼロ・1・乱数を指定回数（1〜7 回）書き込み、復元を困難にします。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>手順</h3>
+  <ol class="steps">
+    <li>「対象のドライブ」で、フォーマットするドライブを選びます。選ぶと下に警告が出て、失われる容量が示されます。</li>
+    <li>方式を選びます。ディープを選んだときは上書き回数も指定します（<strong>3 回で実用上十分</strong>です）。</li>
+    <li>ファイルシステムを選びます。迷ったら下の表を参照してください。</li>
+    <li>必要ならラベル（ドライブの名前）を入れます。日本語も使えます。</li>
+    <li>「フォーマットを実行」を押し、確認画面にドライブ文字（例: <code>E</code>）を入力します。</li>
+  </ol>
+
+  <h3>ファイルシステムの選びかた</h3>
+  <table>
+    <thead><tr><th style="width:110px">形式</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">NTFS</td><td>Windows で使う内蔵・外付けドライブの標準。迷ったらこれ。</td></tr>
+      <tr><td class="mono">exFAT</td><td>Windows と Mac の両方で読み書きしたい USB メモリや外付け HDD 向け。4 GB 超のファイルも扱えます。</td></tr>
+      <tr><td class="mono">FAT32</td><td>カーナビ、ゲーム機、古い機器向け。1 ファイル 4 GB までという制限があります。</td></tr>
+      <tr><td class="mono">ReFS</td><td>大容量向けの新しい形式。対応環境が限られるため、必要と分かっているときだけ。</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    「クラスタサイズ」は通常「既定」のままで構いません。小さいファイルが大量にあるなら小さく、
+    動画のような大きなファイル中心なら大きくすると、わずかに効率が上がります。
+  </p>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">ラベルだけ変更</span>
+      <span class="rev rev-safe">中身はそのまま</span>
+      <span class="time">即座</span>
+    </div>
+    <div class="op-body">
+      <p>フォーマットせずに、ドライブの表示名だけを変えます。</p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">空き領域だけ上書き</span>
+      <span class="rev rev-warn">既存ファイルは残る</span>
+      <span class="time">数十分〜数時間</span>
+    </div>
+    <div class="op-body">
+      <p>
+        いま入っているファイルは残したまま、<strong>過去に削除したデータ</strong>の痕跡だけを消します。
+        「消したはずのファイルを復元されたくないが、いま使っているドライブは空にしたくない」というときに使います。
+      </p>
+    </div>
+  </div>
+
+  <div class="note warn">
+    <p class="note-title">SSD の場合</p>
+    <p>
+      ディープフォーマットは SSD の代替ブロックまでは消せません。SSD を確実に消してから手放したいときは、
+      メーカーが配布するツールの Secure Erase を併用してください。
+    </p>
+  </div>
+</section>
+
+<!-- ============ CD / DVD ============ -->
+<section id="optical">
+  <h2><span class="num">07</span>CD / DVD タブ</h2>
+
+  <p>
+    古いディスクがまだ読めるかを調べ、読めるうちに中身を救い出すための画面です。
+    傷や経年劣化で一部が読めなくなっていても、処理は途中で止まりません。
+  </p>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">メディアを確認</span>
+      <span class="rev rev-safe">読み取りのみ</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>ラベル、ファイルシステム、ファイル数、合計サイズ、更新日の範囲を表示します。中身の見当をつけるのに使います。</p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">全セクタを読み取り検査</span>
+      <span class="rev rev-safe">読み取りのみ</span>
+      <span class="time">5〜30 分</span>
+    </div>
+    <div class="op-body">
+      <p>
+        先頭から末尾まで全部を実際に読んで、読めないセクタの数を数えます。保存はしません。
+        「読み取り再試行」の回数を増やすと、粘って読める確率が上がる代わりに時間が延びます。
+        結果が<strong>良好</strong>ならまだ健全、<strong>劣化あり</strong>なら急いでバックアップしてください。
+      </p>
+    </div>
+  </div>
+
+  <h3>バックアップの 2 つの方法</h3>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">ISO イメージとして保存</span>
+      <span class="rev rev-safe">読み取りのみ</span>
+      <span class="time">5〜30 分</span>
+    </div>
+    <div class="op-body">
+      <p>
+        ディスクを丸ごと 1 個のファイルにします。読めなかったセクタはゼロで埋めて位置を保つので、
+        <strong>壊れかけのディスクでも最後まで通ります。</strong>
+        起動ディスクやゲームなど、ファイルをコピーするだけでは再現できないものはこちらを選んでください。
+      </p>
+      <p>
+        できた <code>.iso</code> は、Windows でダブルクリックすると仮想ドライブとしてマウントでき、
+        中のファイルをそのまま取り出せます。
+      </p>
+    </div>
+  </div>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">ファイルをフォルダーへコピー</span>
+      <span class="rev rev-safe">読み取りのみ</span>
+      <span class="time">5〜30 分</span>
+    </div>
+    <div class="op-body">
+      <p>
+        中のファイルをそのままフォルダーへ取り出します。写真や書類のバックアップ向きです。
+        読めなかったファイルはスキップして続行し、保存先に
+        <code>_読み取り失敗ファイル一覧.txt</code> を残します。
+      </p>
+    </div>
+  </div>
+
+  <div class="note">
+    <p class="note-title">迷ったら</p>
+    <p>
+      劣化が進んでいそうなディスクは、<strong>まず ISO で丸ごと吸い出す</strong>のが安全です。
+      ISO さえ手元にあれば、中身の取り出しは後からいつでもできます。
+      ディスクを何度も読むこと自体が劣化を進めるため、読む回数は少ないほうが有利です。
+    </p>
+  </div>
+
+  <p>
+    「トレイを開く」「トレイを閉じる」でドライブの開閉ができます。
+    スロット式のドライブでは「閉じる」が効かないことがあります。
+  </p>
+</section>
+
+<!-- ============ 取り外し・ツール ============ -->
+<section id="device">
+  <h2><span class="num">08</span>取り外し・ツールタブ</h2>
+
+  <h3>安全に取り外す</h3>
+
+  <div class="op">
+    <div class="op-head">
+      <span class="op-name">安全に取り外す</span>
+      <span class="rev rev-safe">データは保たれる</span>
+      <span class="time">数秒</span>
+    </div>
+    <div class="op-body">
+      <p>
+        書き込み待ちのデータを完全に書き出してから、ボリュームのマウントを解除し、
+        USB 機器そのものを停止します。この操作が成功したあとなら、ケーブルを抜いて構いません。
+      </p>
+    </div>
+  </div>
+
+  <p>
+    「使用中です」と拒否された場合、ログに理由が出ます。よくあるのは次の 2 つです。
+  </p>
+  <ul>
+    <li><strong>アプリケーションが拒否</strong> — そのドライブのファイルを開いているアプリや、エクスプローラーのウィンドウを閉じてから再試行してください。</li>
+    <li><strong>ページングファイル使用中</strong> — そのドライブが仮想メモリに使われています。システムの設定で解除が必要です。</li>
+  </ul>
+
+  <h3>ハードウェアを再認識</h3>
+  <p>
+    抜き差ししても現れないドライブがあるときに押します。デバイスマネージャーの
+    「ハードウェア変更のスキャン」と同じことをしたうえで、ディスクの再スキャンも行います。
+    認識されない外付けドライブは、これで復帰することがあります。
+  </p>
+
+  <h3>diskpart（上級者向け）</h3>
+  <p>
+    この画面にない操作を、Windows 標準の <code>diskpart</code> のコマンドで直接実行できます。
+    1 行に 1 コマンドで書いてください。
+  </p>
+  <table>
+    <thead><tr><th style="width:280px">コマンド例</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">list disk</td><td>ディスクの一覧を表示</td></tr>
+      <tr><td class="mono">select disk 1<br>list partition</td><td>ディスク 1 を選び、そのパーティションを表示</td></tr>
+      <tr><td class="mono">select disk 1<br>convert gpt</td><td>ディスク 1 を GPT に変換</td></tr>
+      <tr><td class="mono">select disk 1<br>attributes disk clear readonly</td><td>読み取り専用属性を解除</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note danger">
+    <p class="note-title">diskpart の注意</p>
+    <p>
+      <code>clean</code> / <code>delete</code> / <code>format</code> などが含まれる場合は確認画面が出ますが、
+      それ以外に安全装置はありません。<strong>ディスク番号を必ず <code>list disk</code> で確認してから</strong>
+      実行してください。番号を間違えると、意図しないディスクが消えます。
+    </p>
+  </div>
+</section>
+
+<!-- ============ 安全のしくみ ============ -->
+<section id="safety">
+  <h2><span class="num">09</span>安全のしくみ</h2>
+
+  <p>取り返しのつかない操作を防ぐため、次の仕組みを入れてあります。</p>
+
+  <h3>システム領域は操作できない</h3>
+  <p>
+    Windows が入っているドライブと起動用パーティションは、削除・フォーマット・消去・取り外しの
+    対象から自動的に外れます。ボタンを押しても実行されず、ログにその旨が出ます。
+  </p>
+
+  <h3>対象名の入力を求める確認</h3>
+  <p>
+    データが失われる操作の前には、対象の名前を<strong>手で入力する</strong>画面が出ます。
+    「はい」を連打して事故が起きることを防ぐためです。
+  </p>
+  <table>
+    <thead><tr><th style="width:280px">操作</th><th>入力する文字</th></tr></thead>
+    <tbody>
+      <tr><td>パーティションの削除</td><td class="mono">削除</td></tr>
+      <tr><td>ディスクの消去</td><td class="mono">ディスク1（対象の番号）</td></tr>
+      <tr><td>フォーマット</td><td class="mono">E（対象のドライブ文字）</td></tr>
+      <tr><td>ディスクの初期化</td><td class="mono">初期化</td></tr>
+    </tbody>
+  </table>
+
+  <h3>すべてログに残る</h3>
+  <p>
+    実行した内容と結果は時刻付きで下部のログに残ります。「ログを保存」で書き出しておくと、
+    あとから何をしたか確認できます。うまくいかなかったときの原因調べにも役立ちます。
+  </p>
+</section>
+
+<!-- ============ 困ったときは ============ -->
+<section id="trouble">
+  <h2><span class="num">10</span>困ったときは</h2>
+
+  <table>
+    <thead><tr><th style="width:320px">症状</th><th>対処</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>操作がすべて「アクセスが拒否されました」になる</td>
+        <td>管理者権限で起動していません。画面左上の表示を確認し、右クリック →「管理者として実行」で起動し直してください。</td>
+      </tr>
+      <tr>
+        <td>健康状態が「取得不可」になる</td>
+        <td>故障ではありません。USB 変換ブリッジ経由の外付けや一部の NVMe は S.M.A.R.T. を外に出しません。可能なら本体に直接つないで試してください。</td>
+      </tr>
+      <tr>
+        <td>つないだ USB メモリが一覧に出ない</td>
+        <td>「再スキャン」→ それでも出なければ「ハードウェアを再認識」。それでも出ない場合は別のポートを試してください。</td>
+      </tr>
+      <tr>
+        <td>「安全に取り外す」が拒否される</td>
+        <td>そのドライブを使っているアプリ（エクスプローラー、ウイルス対策ソフト、開いたままのファイル）を閉じて再試行してください。ログに拒否した理由が出ます。</td>
+      </tr>
+      <tr>
+        <td>作ったパーティションがエクスプローラーに出ない</td>
+        <td>作成直後は未フォーマットです。フォーマットタブでフォーマットしてください。ドライブ文字が付いていない場合は「ドライブ文字を割り当て」を先に実行します。</td>
+      </tr>
+      <tr>
+        <td>フォーマットが「ボリュームを開くことができません」で失敗する</td>
+        <td>そのドライブを他のアプリが使っています。使用中のアプリを閉じるか、いったん取り外して挿し直してから再試行してください。</td>
+      </tr>
+      <tr>
+        <td>フォーマットが終わらない</td>
+        <td>通常フォーマットとディープフォーマットは容量に比例して時間がかかります。数 TB のディスクなら数時間が普通です。進捗バーが動いていれば正常に進んでいます。</td>
+      </tr>
+      <tr>
+        <td>CD の読み取りが極端に遅い</td>
+        <td>読めないセクタで再試行を繰り返しています。時間を優先するなら「読み取り再試行」を 1 に下げてください。救出を優先するなら回数を増やしたまま待ちます。</td>
+      </tr>
+      <tr>
+        <td>ディスクが「読み取り専用」になっている</td>
+        <td>パーティションタブの「読み取り専用を解除」を実行します。SD カードなど、本体に書き込み禁止スイッチがある場合はそちらも確認してください。</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 用語 ============ -->
+<section id="glossary">
+  <h2><span class="num">11</span>用語</h2>
+
+  <table>
+    <thead><tr><th style="width:200px">用語</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td>物理ディスク</td><td>装置としての 1 台。HDD や SSD、USB メモリそのもの。</td></tr>
+      <tr><td>パーティション</td><td>1 台の物理ディスクを区切った領域。1 台を C: と D: に分ける、といった使い方をします。</td></tr>
+      <tr><td>ボリューム</td><td>フォーマットされ、ドライブ文字が付いて使える状態になった領域。</td></tr>
+      <tr><td>未割り当て領域</td><td>まだどのパーティションにも属していない空き。ここに新しいパーティションを作れます。</td></tr>
+      <tr><td>MBR / GPT</td><td>ディスクの区切りかたを記録する方式。GPT が新しく、2 TB 超に対応。MBR は古い機器向け。</td></tr>
+      <tr><td>S.M.A.R.T.</td><td>ドライブが自分の劣化具合を記録しているしくみ。読み出すことで故障の予兆が分かります。</td></tr>
+      <tr><td>セクタ</td><td>ディスク上の最小の読み書き単位。CD / DVD では 2048 バイト。</td></tr>
+      <tr><td>代替処理済セクタ</td><td>読めなくなったため、予備の領域と入れ替えられたセクタ。数が増えるほど寿命が近い。</td></tr>
+      <tr><td>ISO イメージ</td><td>CD / DVD の中身を丸ごと 1 個のファイルにしたもの。ダブルクリックで仮想ドライブとして開けます。</td></tr>
+      <tr><td>クラスタサイズ</td><td>ファイルを置くときの区画の大きさ。既定のままで問題ありません。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <div>
+    ディスク管理ツール 操作マニュアル · Version 1.0 ·
+    このツールはディスクを直接操作します。大切なデータは、操作の前に必ず別の場所へバックアップしてください。
+  </div>
+</footer>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var sections = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+
+  function mark(){
+    var pos = window.scrollY + 120, current = 0;
+    for (var i = 0; i < sections.length; i++){
+      if (sections[i] && sections[i].offsetTop <= pos) current = i;
+    }
+    links.forEach(function(a, i){ a.classList.toggle('on', i === current); });
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function(){ mark(); ticking = false; });
+  }, { passive: true });
+
+  mark();
+})();
+</script>
+
+</body>
+</html>

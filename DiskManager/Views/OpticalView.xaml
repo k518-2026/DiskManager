@@ -1,0 +1,62 @@
+<UserControl x:Class="DiskManager.Views.OpticalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="24,20,24,24">
+
+        <GroupBox Header="光学ドライブ">
+            <StackPanel>
+                <WrapPanel>
+                    <ComboBox ItemsSource="{Binding OpticalDrives}" SelectedItem="{Binding SelectedOptical}"
+                              DisplayMemberPath="Display" MinWidth="320" />
+                    <Button Content="ドライブを再検出" Command="{Binding OpticalRefreshCommand}" MinWidth="140" />
+                    <Button Content="トレイを開く" Command="{Binding OpticalEjectCommand}" MinWidth="120" />
+                    <Button Content="トレイを閉じる" Command="{Binding OpticalLoadCommand}" MinWidth="120" />
+                </WrapPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0"
+                            DataContext="{Binding SelectedOptical}">
+                    <TextBlock Text="{Binding StatusText}" Foreground="{StaticResource Accent}"
+                               FontFamily="{StaticResource MonoFont}" FontSize="11.5" Margin="0,0,16,0" />
+                    <TextBlock Text="{Binding VolumeLabel}" Foreground="{StaticResource Muted}"
+                               FontFamily="{StaticResource MonoFont}" FontSize="11.5" Margin="0,0,16,0" />
+                    <TextBlock Text="{Binding MediaSizeText}" Foreground="{StaticResource Muted}"
+                               FontFamily="{StaticResource MonoFont}" FontSize="11.5" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="メディアの状態">
+            <StackPanel>
+                <Border Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1"
+                        CornerRadius="4" Padding="14" MinHeight="120">
+                    <TextBlock Text="{Binding OpticalSummary}" TextWrapping="Wrap" LineHeight="22"
+                               FontFamily="{StaticResource MonoFont}" FontSize="12" />
+                </Border>
+                <WrapPanel Margin="0,10,0,0">
+                    <Button Content="メディアを確認" Command="{Binding OpticalSummaryCommand}" MinWidth="140" />
+                    <Button Content="全セクタを読み取り検査" Command="{Binding OpticalVerifyCommand}" MinWidth="190" />
+                    <StackPanel Orientation="Horizontal" Margin="8,0,0,8">
+                        <TextBlock Text="読み取り再試行" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Muted}" />
+                        <TextBox Text="{Binding RetryCount}" Width="60" Margin="0" />
+                        <TextBlock Text="回" VerticalAlignment="Center" Margin="6,0,0,0"
+                                   Foreground="{StaticResource Muted}" />
+                    </StackPanel>
+                </WrapPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="バックアップ">
+            <StackPanel>
+                <WrapPanel>
+                    <Button Content="ISO イメージとして保存" Command="{Binding OpticalIsoCommand}" MinWidth="190" />
+                    <Button Content="ファイルをフォルダーへコピー" Command="{Binding OpticalCopyCommand}" MinWidth="220" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap" LineHeight="21" Foreground="{StaticResource Muted}" Margin="0,6,0,0">
+                    傷んだディスクでも途中で止まりません。読めないセクタは再試行のうえ記録し、
+                    ISO ではゼロで埋めて位置を保ちます。ファイルコピーでは読めなかったファイルの一覧を保存先に残します。
+                    劣化が進んでいるメディアは、まず ISO で丸ごと吸い出しておくと後から中身を取り出せます。
+                </TextBlock>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>

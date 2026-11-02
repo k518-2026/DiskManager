@@ -1,0 +1,70 @@
+<UserControl x:Class="DiskManager.Views.PartitionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="24,20,24,24">
+
+        <TextBlock Text="このディスクのパーティション" Style="{StaticResource Eyebrow}" />
+        <DataGrid ItemsSource="{Binding Partitions}" SelectedItem="{Binding SelectedPartition}"
+                  Height="220" Margin="0,0,0,18">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="番号" Binding="{Binding NumberText}" Width="70" />
+                <DataGridTextColumn Header="ドライブ" Binding="{Binding DriveLetter}" Width="90" />
+                <DataGridTextColumn Header="種類" Binding="{Binding TypeText}" Width="*" />
+                <DataGridTextColumn Header="開始位置" Binding="{Binding OffsetText}" Width="120"
+                                    FontFamily="{StaticResource MonoFont}" />
+                <DataGridTextColumn Header="サイズ" Binding="{Binding SizeText}" Width="120"
+                                    FontFamily="{StaticResource MonoFont}" />
+                <DataGridTextColumn Header="" Binding="{Binding ProtectedText}" Width="100" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <GroupBox Header="パーティションを作成">
+            <StackPanel>
+                <WrapPanel>
+                    <CheckBox Content="空き領域をすべて使う" IsChecked="{Binding UseMaxSize}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+                        <TextBlock Text="サイズ" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Muted}" />
+                        <TextBox Text="{Binding NewPartitionSizeMb}" Width="110" Margin="0,0,6,0"
+                                 IsEnabled="{Binding UseMaxSize, Converter={StaticResource NotBool}}" />
+                        <TextBlock Text="MB" VerticalAlignment="Center" Foreground="{StaticResource Muted}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,16,8">
+                        <TextBlock Text="ドライブ文字" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Muted}" />
+                        <ComboBox ItemsSource="{Binding LetterChoices}" SelectedItem="{Binding NewPartitionLetter}"
+                                  Width="90" Margin="0" />
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel Margin="0,6,0,0">
+                    <Button Content="作成する" Command="{Binding CreatePartitionCommand}" MinWidth="120" />
+                    <Button Content="ドライブ文字を割り当て" Command="{Binding AssignLetterCommand}" MinWidth="180" />
+                    <Button Content="選択したパーティションを削除" Command="{Binding DeletePartitionCommand}"
+                            Style="{StaticResource DangerButton}" MinWidth="220" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Muted}" FontSize="11.5" LineHeight="19"
+                           Margin="0,4,0,0"
+                           Text="作成直後のパーティションは未フォーマットです。続けて「フォーマット」タブで使える状態にしてください。" />
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="ディスク全体の操作">
+            <StackPanel>
+                <WrapPanel>
+                    <CheckBox Content="GPT で初期化（2TB 超はこちら）" IsChecked="{Binding InitializeAsGpt}" />
+                    <CheckBox Content="消去時に全域へゼロを書き込む" IsChecked="{Binding ZeroOutOnClear}" />
+                </WrapPanel>
+                <WrapPanel Margin="0,6,0,0">
+                    <Button Content="未使用ディスクを初期化" Command="{Binding InitializeDiskCommand}" MinWidth="180" />
+                    <Button Content="オンライン / オフライン切替" Command="{Binding ToggleOnlineCommand}" MinWidth="190" />
+                    <Button Content="読み取り専用を解除" Command="{Binding ClearReadOnlyCommand}" MinWidth="160" />
+                    <Button Content="ディスクを消去" Command="{Binding ClearDiskCommand}"
+                            Style="{StaticResource DangerButton}" MinWidth="140" />
+                </WrapPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource Muted}" FontSize="11.5" LineHeight="19"
+                           Margin="0,4,0,0"
+                           Text="「ディスクを消去」はすべてのパーティションを削除します。ゼロ書き込みを有効にすると復元は極めて困難になりますが、容量によっては数時間かかります。" />
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>
